@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="icon" type="image/png" sizes="32x32" href="./images/favicon-32x32.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+
+  <title>Frontend Mentor | Expenses chart component</title>
+
+</head>
+
+<body>
+  <main class="core-main">
+    <div class="card">
+      <div class="balance-card">
+        <div class="balance-text">
+          <p class="balance-paragraph">
+            My balance
+          </p>
+          <span class="balance-price">
+            $921.48
+          </span>
+        </div>
+        <div class="balance-img">
+          <img src="./images/logo.svg" alt="Balance icon logo" class="balance-img-logo" />
+        </div>
+      </div>
+      <div class="spending-chart">
+        <div class="chart-head">
+          <h1 class="chart-title">
+            Spending - Last 7 days
+          </h1>
+          <ul class="unordered-chart" id="chart-ul">
+          </ul>
+        </div>
+        <div class="chart-footer">
+          <p class="chart-footer-total">
+            Total this month
+          </p>
+          <div class="chart-footer-percentage">
+            <span class="chart-total-value" id="chart-total">
+              $0.00
+            </span>
+            <div class="chart-percentage-month">
+              <p class="percentage">
+                +2.4%
+              </p>
+              <span class="last-month">
+                from last month
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const $chart_ul = document.querySelector('#chart-ul');
+    const $chart_total = document.querySelector('#chart-total');
+    const $chart = document.querySelector('#chart');
+
+    fetch("data.json")
+      .then(response => response.json())
+      .then(data => {
+        const total = data.reduce((acc, element) => acc + element.amount, 0);
+
+        data.forEach((element, index) => {
+          $chart_ul.insertAdjacentHTML('beforeend', `
+            <li id="chart-li-${index}" class="chart-li">
+              <span class="chart-price d-none" id="chart-price-${index}">
+                $${element.amount}
+              </span>
+              <div class="chart" id="chart-${index}" style="height: ${(element.amount) / 8}em;"></div>
+              <span class="chart-month">
+                ${element.day}
+              </span>
+            </li>
+            `)
+        });
+        $chart_total.textContent = `$${total}`;
+      });
+
+    document.querySelectorAll('#chart-ul').forEach(item => {
+      item.addEventListener('click', event => {
+        const id = event.target.id.split('-')[1];
+        const chart_target = document.querySelector(`#chart-${id}`);
+        const chart_price = document.querySelector(`#chart-price-${id}`);
+
+        if (chart_price.classList.contains('d-none')) {
+          chart_price.classList.remove('d-none');
+          chart_target.classList.add('primary-cyan')
+        } else {
+          chart_price.classList.add('d-none');
+          chart_target.classList.remove('primary-cyan')
+
+        }
+      })
+    })
+  </script>
+</body>
+
+</html>
